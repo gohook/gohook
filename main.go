@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gohook/gohook/commands"
 	"github.com/urfave/cli"
 	"os"
@@ -15,27 +14,13 @@ var (
 	Version = "v0.0.1"
 )
 
-func EntryCommand(c *cli.Context) error {
-	if c.Bool("start") {
-		// Look for start flag to kickoff app
-		return c.App.Command("start").Run(c)
-	}
-	return cli.ShowAppHelp(c)
-}
-
-func StartCommand(c *cli.Context) error {
-	fmt.Println("Starting client")
-	fmt.Println("Exiting because there is nothing here yet")
-	return nil
-}
-
 func main() {
 	app := cli.NewApp()
 
 	// Application CLI Config
 	app.Name = appName
 	app.Version = Version
-	app.Action = EntryCommand
+	app.Action = commands.EntryCommand
 	app.Authors = []cli.Author{
 		cli.Author{
 			Name:  "Brian Egizi",
@@ -60,7 +45,7 @@ func main() {
 			Name:    "start",
 			Aliases: []string{"s"},
 			Usage:   "Run the client",
-			Action:  StartCommand,
+			Action:  commands.StartCommand,
 		},
 		{
 			Name:    "add",
