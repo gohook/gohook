@@ -1,9 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/go-kit/kit/log"
+	gohookclient "github.com/gohook/gohook-server/client"
 	"github.com/gohook/gohook/commands"
 	"github.com/urfave/cli"
-	"os"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -15,7 +21,17 @@ var (
 )
 
 func main() {
+
+	// Establish GRPC Connection
+	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithTimeout(time.Second))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
 	app := cli.NewApp()
+	service := gohookclient.New(conn, log.NewNopLogger())
 
 	// Application CLI Config
 	app.Name = appName
@@ -55,7 +71,7 @@ func main() {
 				cli.StringFlag{Name: "output, o", Usage: "Define the output file for command's STDOUT"},
 				cli.StringSliceFlag{Name: "params, p", Usage: "Define params to be collected from the webhook as passed into STDIN"},
 			},
-			Action: commands.Add,
+			Action: commands.Add(service),
 		},
 		{
 			Name:    "remove",
@@ -67,7 +83,7 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "List all webhook commands",
-			Action:  commands.List,
+			Action:  commands.List(service),
 		},
 	}
 
