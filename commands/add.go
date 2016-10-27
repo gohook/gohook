@@ -8,12 +8,13 @@ import (
 	// "strings"
 	// "time"
 
+	"github.com/gohook/gohook-server/client"
 	"github.com/gohook/gohook-server/gohookd"
 	"github.com/urfave/cli"
 	"golang.org/x/net/context"
 )
 
-func Add(s gohookd.Service) cli.ActionFunc {
+func Add(s client.GohookClient) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		fmt.Println("args: ", c.Args())
 		fmt.Println("flags: ", c.FlagNames())

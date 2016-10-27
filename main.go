@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/log"
-	gohookclient "github.com/gohook/gohook-server/client"
+	"github.com/gohook/gohook-server/client"
 	"github.com/gohook/gohook/commands"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
@@ -23,7 +23,7 @@ var (
 func main() {
 
 	// Establish GRPC Connection
-	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithTimeout(time.Second))
+	conn, err := grpc.Dial("localhost:9001", grpc.WithInsecure(), grpc.WithTimeout(time.Second))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
@@ -31,7 +31,7 @@ func main() {
 	defer conn.Close()
 
 	app := cli.NewApp()
-	service := gohookclient.New(conn, log.NewNopLogger())
+	service := client.New(conn, log.NewNopLogger())
 
 	// Application CLI Config
 	app.Name = appName
@@ -61,7 +61,7 @@ func main() {
 			Name:    "start",
 			Aliases: []string{"s"},
 			Usage:   "Run the client",
-			Action:  commands.StartCommand,
+			Action:  commands.StartCommand(service),
 		},
 		{
 			Name:    "add",
