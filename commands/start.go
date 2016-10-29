@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
+	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/gohook/gohook-server/client"
 	"github.com/gohook/gohook-server/pb"
@@ -13,10 +17,15 @@ import (
 func StartCommand(s client.GohookClient) cli.ActionFunc {
 	return func(c *cli.Context) error {
 		fmt.Println("Starting client")
-		stream, err := s.Tunnel(context.Background(), &pb.TunnelRequest{"myid"})
+		stream, err := s.Tunnel(context.Background(), &pb.TunnelRequest{})
 		if err != nil {
 			fmt.Println(err)
 			return err
+		}
+
+		var rawCommand string
+		if len(os.Args) > 1 {
+			rawCommand = strings.Join(c.Args(), " ")
 		}
 
 		for {
@@ -29,6 +38,15 @@ func StartCommand(s client.GohookClient) cli.ActionFunc {
 				fmt.Println("Error", err)
 				return err
 			}
+
+			cmd := exec.Command("sh", "-c", rawCommand)
+			cmd.Stdout = os.Stdout
+
+			err = cmd.Run()
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			fmt.Println(response.Event)
 		}
 
