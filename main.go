@@ -21,9 +21,14 @@ var (
 )
 
 func main() {
+	token := os.Getenv("GOHOOK_TOKEN")
 
 	// Establish GRPC Connection
-	conn, err := grpc.Dial("localhost:9001", grpc.WithInsecure(), grpc.WithTimeout(time.Second))
+	conn, err := grpc.Dial("localhost:9001",
+		grpc.WithInsecure(),
+		grpc.WithTimeout(time.Second),
+		grpc.WithPerRPCCredentials(&authToken{token}),
+	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
