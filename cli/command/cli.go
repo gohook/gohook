@@ -13,9 +13,9 @@ type GohookCli struct {
 	client     *client.GohookClient
 }
 
-func (cli *GohookCli) Initialize(opts *cliflags.ClientOptions) error {
+func (cli *GohookCli) Initialize(opts *cliflags.ClientOptions, store client.HookStore) error {
 	cli.configFile = LoadDefaultConfigFile()
-	client, err := client.NewGohookClient(cli.configFile.AuthToken)
+	client, err := client.NewGohookClient(cli.configFile.AuthToken, store)
 	if err != nil {
 		return err
 	}
