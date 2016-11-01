@@ -11,6 +11,7 @@ import (
 type ConfigFile struct {
 	AuthToken string `json:"auth_token"`
 	Filename  string `json:"-"`
+	Host      string `json:"host"`
 }
 
 func (configFile *ConfigFile) LoadFromReader(configData io.Reader) error {

@@ -6,6 +6,7 @@ import (
 	grpcclient "github.com/gohook/gohook-server/client"
 	"github.com/gohook/gohook-server/gohookd"
 	"github.com/gohook/gohook-server/pb"
+	"github.com/gohook/gohook/config/configfile"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io"
@@ -143,12 +144,13 @@ func (c *GohookClient) Create(method string, command []string) (*Hook, error) {
 	return hook, nil
 }
 
-func NewGohookClient(token string, store HookStore) (*GohookClient, error) {
+func NewGohookClient(config *configfile.ConfigFile, store HookStore) (*GohookClient, error) {
+	fmt.Println(config.Host)
 	// Set up managed connection here
-	conn, err := grpc.Dial("localhost:9001",
+	conn, err := grpc.Dial(config.Host,
 		grpc.WithInsecure(),
 		grpc.WithTimeout(time.Second),
-		grpc.WithPerRPCCredentials(&authToken{token}),
+		grpc.WithPerRPCCredentials(&authToken{config.AuthToken}),
 	)
 	if err != nil {
 		fmt.Println("error: ", err)

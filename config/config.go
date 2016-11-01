@@ -36,6 +36,7 @@ func SetConfigDir(dir string) {
 
 func NewConfigFile(filename string) *configfile.ConfigFile {
 	return &configfile.ConfigFile{
+		Host:     "gohook.io:9001",
 		Filename: filename,
 	}
 }
@@ -45,24 +46,21 @@ func Load(configDir string) (*configfile.ConfigFile, error) {
 		configDir = ConfigDir()
 	}
 
-	configFile := configfile.ConfigFile{
-		Filename: filepath.Join(configDir, ConfigFileName),
-	}
-
+	configFile := NewConfigFile(filepath.Join(configDir, ConfigFileName))
 	_, err := os.Stat(configFile.Filename)
 	if err == nil {
 		file, err := os.Open(configFile.Filename)
 		if err != nil {
-			return &configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
+			return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
 		}
 		defer file.Close()
 		err = configFile.LoadFromReader(file)
 		if err != nil {
 			err = fmt.Errorf("%s - %v", configFile.Filename, err)
 		}
-		return &configFile, err
+		return configFile, err
 	} else if !os.IsNotExist(err) {
-		return &configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
+		return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
 	}
-	return &configFile, nil
+	return configFile, nil
 }
