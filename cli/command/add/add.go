@@ -37,6 +37,6 @@ func runAdd(gohookCli *command.GohookCli, opts *addOptions) error {
 	}
 
 	// formatter.Write() <- write out to stdout
-	fmt.Printf("Add command, Method: %s, Command: %s, RemoteHook: %s\n", opts.method, opts.command, hook)
+	fmt.Printf("Add command, ID: %s, Method: %s, Command: %s\n", hook.Id, hook.Method, hook.Command)
 	return nil
 }

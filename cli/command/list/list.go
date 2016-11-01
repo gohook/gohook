@@ -42,7 +42,7 @@ func formatHookTable(hooks client.HookList) error {
 	// This is lame. Upgrate to github.com/olekukonko/tablewriter in the future
 	table := ""
 	for i, h := range hooks {
-		table += fmt.Sprintf("%d | %s | %s | %s |\n", i+1, h.Id, h.Method, h.Url)
+		table += fmt.Sprintf("%d | %s | %s | %s | %s |\n", i+1, h.Id, h.Method, h.Url, h.Command)
 	}
 
 	fmt.Println(table)
