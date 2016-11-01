@@ -70,6 +70,7 @@ func (c *GohookClient) Tunnel() error {
 
 		// TODO: Output to log file
 		cmd.Stdout = os.Stdout
+		cmd.Dir = hook.WorkingDir
 
 		err = cmd.Run()
 		if err != nil {
@@ -121,11 +122,17 @@ func (c *GohookClient) Create(method string, command []string) (*Hook, error) {
 		return nil, err
 	}
 
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
 	hook := &Hook{
-		Id:      string(remoteHook.Id),
-		Method:  remoteHook.Method,
-		Url:     remoteHook.Url,
-		Command: command,
+		Id:         string(remoteHook.Id),
+		Method:     remoteHook.Method,
+		Url:        remoteHook.Url,
+		Command:    command,
+		WorkingDir: workingDir,
 	}
 
 	err = c.store.Add(hook)
