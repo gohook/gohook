@@ -50,6 +50,21 @@ func (f *fileStore) Get(id string) (*client.Hook, error) {
 	return nil, errors.New("Not Found")
 }
 
+func (f *fileStore) Remove(id string) error {
+	err := f.Load()
+	if err != nil {
+		return err
+	}
+
+	for i, h := range f.hooks {
+		if h.Id == id {
+			f.hooks = append(f.hooks[:i], f.hooks[i+1:]...)
+		}
+	}
+
+	return nil
+}
+
 func (f *fileStore) LoadFromReader(hookStore io.Reader) error {
 	return json.NewDecoder(hookStore).Decode(&f.hooks)
 }

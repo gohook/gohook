@@ -144,6 +144,15 @@ func (c *GohookClient) Create(method string, command []string) (*Hook, error) {
 	return hook, nil
 }
 
+func (c *GohookClient) Remove(id string) error {
+	_, err := c.apiClient.Delete(context.Background(), gohookd.HookID(id))
+	if err != nil {
+		return err
+	}
+
+	return c.store.Remove(id)
+}
+
 func NewGohookClient(config *configfile.ConfigFile, store HookStore) (*GohookClient, error) {
 	// Set up managed connection here
 	conn, err := grpc.Dial(config.Host,
