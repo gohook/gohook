@@ -14,7 +14,12 @@ type GohookCli struct {
 }
 
 func (cli *GohookCli) Initialize(opts *cliflags.ClientOptions, store client.HookStore) error {
-	cli.configFile = LoadDefaultConfigFile()
+	var err error
+	cli.configFile, err = LoadDefaultConfigFile()
+	if err != nil {
+		return err
+	}
+
 	client, err := client.NewGohookClient(cli.configFile, store)
 	if err != nil {
 		return err
@@ -35,13 +40,13 @@ func NewGohookCli() *GohookCli {
 	return &GohookCli{}
 }
 
-func LoadDefaultConfigFile() *configfile.ConfigFile {
+func LoadDefaultConfigFile() (*configfile.ConfigFile, error) {
 	configFile, err := config.Load(config.ConfigDir())
 	if err != nil {
-		fmt.Println("Error loading config file:", err)
+		return nil, err
 	}
 	if !configFile.ContainsAuthToken() {
-		fmt.Println("Missing authentication token. Please log in")
+		return nil, fmt.Errorf("config file is missing token")
 	}
-	return configFile
+	return configFile, nil
 }
