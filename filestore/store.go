@@ -3,6 +3,7 @@ package filestore
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gohook/gohook/client"
 	"io"
 	"os"
@@ -112,9 +113,15 @@ func (f *fileStore) Write() error {
 	return f.SaveToWriter(file)
 }
 
-func NewLocalHookStore() client.HookStore {
+func NewLocalHookStore(dir string) (client.HookStore, error) {
 	// Pass in opt data for settings and such for config
-	return &fileStore{
-		Filename: "/Users/begizi/.gohook/hooks.json",
+	path, err := filepath.Abs(dir)
+	if err != nil {
+		return nil, err
+
 	}
+
+	return &fileStore{
+		Filename: fmt.Sprintf("%s/hooks.json", path),
+	}, nil
 }
