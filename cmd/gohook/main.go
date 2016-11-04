@@ -38,13 +38,18 @@ func newGohookCommand(gohookCli *command.GohookCli) *cobra.Command {
 			return nil
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			store := filestore.NewLocalHookStore()
+			store, err := filestore.NewLocalHookStore(opts.HookDir)
+			if err != nil {
+				return err
+			}
+
 			return gohookCli.Initialize(opts, store)
 		},
 	}
 
 	flags := cmd.Flags()
 	flags.BoolVarP(&opts.Version, "version", "v", false, "Print version information and quit")
+	flags.StringVar(&opts.HookDir, "hook-dir", opts.HookDir, "Set location where hooks get stored")
 
 	cmd.SetFlagErrorFunc(FlagErrorFunc)
 	cmd.PersistentFlags().BoolP("help", "h", false, "Print usage")
