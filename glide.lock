@@ -1,5 +1,5 @@
-hash: d092ff2d08aaa3a3cecdb4bf03200e53adf367f9cfdf32f09ceb22df28ef5a04
-updated: 2016-10-30T12:58:42.498366371-04:00
+hash: fb36cd82feb3b71b9d35ba41d3fd9de92b28828ec4bc134fcfe977aaa44bdd90
+updated: 2016-11-04T15:19:04.740472657-04:00
 imports:
 - name: github.com/afex/hystrix-go
   version: 39520ddd07a9d9a071d615f7476798659f5a3b89
@@ -19,11 +19,12 @@ imports:
 - name: github.com/go-stack/stack
   version: 100eb0c0a9c5b306ca2fb4f165df21d80ada4b82
 - name: github.com/gohook/gohook-server
-  version: 69599d84af659320dd2457dd8d0195e2b9b78330
+  version: ae79040c22a62d90425c48efcda88687facd3e5d
   subpackages:
   - client
   - gohookd
   - pb
+  - user
 - name: github.com/golang/protobuf
   version: 87c000235d3d852c1628dc9490cd21ab36a7d69f
   subpackages:
@@ -44,8 +45,6 @@ imports:
   version: f450267a206e480d863d2a92846a40f6e2896b2a
   subpackages:
   - breaker
-- name: github.com/urfave/cli
-  version: a14d7d367bc02b1f57d88de97926727f2d936387
 - name: golang.org/x/net
   version: 697293012c1df3836225e65b04b16871ac5bf0bf
   subpackages:
