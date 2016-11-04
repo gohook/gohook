@@ -66,20 +66,42 @@ func (f *fileStore) Remove(id string) error {
 }
 
 func (f *fileStore) LoadFromReader(hookStore io.Reader) error {
-	return json.NewDecoder(hookStore).Decode(&f.hooks)
+	err := json.NewDecoder(hookStore).Decode(&f.hooks)
+	if err == io.EOF {
+		// ignore empty hooks file errors
+		return nil
+	}
+	return err
 }
 
 func (f *fileStore) Load() error {
 	f.mtx.RLock()
 	defer f.mtx.RUnlock()
 
+	var file *os.File
+
 	_, err := os.Stat(f.Filename)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			// Got an error that wasn't NotExist
+			return err
+		}
 	}
-	file, err := os.Open(f.Filename)
-	if err != nil {
-		return err
+
+	if os.IsNotExist(err) {
+		if err := os.MkdirAll(filepath.Dir(f.Filename), 0700); err != nil {
+			return err
+		}
+
+		file, err = os.Create(f.Filename)
+		if err != nil {
+			return err
+		}
+	} else {
+		file, err = os.Open(f.Filename)
+		if err != nil {
+			return err
+		}
 	}
 	defer file.Close()
 	return f.LoadFromReader(file)
