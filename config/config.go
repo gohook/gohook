@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/gohook/gohook/config/configfile"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -48,19 +49,27 @@ func Load(configDir string) (*configfile.ConfigFile, error) {
 
 	configFile := NewConfigFile(filepath.Join(configDir, ConfigFileName))
 	_, err := os.Stat(configFile.Filename)
-	if err == nil {
-		file, err := os.Open(configFile.Filename)
-		if err != nil {
-			return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return configFile, fmt.Errorf("config file not found - %s", configFile.Filename)
 		}
-		defer file.Close()
-		err = configFile.LoadFromReader(file)
-		if err != nil {
-			err = fmt.Errorf("%s - %v", configFile.Filename, err)
-		}
-		return configFile, err
-	} else if !os.IsNotExist(err) {
+
 		return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
 	}
+
+	file, err := os.Open(configFile.Filename)
+	if err != nil {
+		return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
+	}
+	defer file.Close()
+
+	err = configFile.LoadFromReader(file)
+	if err != nil {
+		if err == io.EOF {
+			return configFile, fmt.Errorf("config file is empty - %s", configFile.Filename)
+		}
+		return configFile, fmt.Errorf("%s - %v", configFile.Filename, err)
+	}
+
 	return configFile, nil
 }
